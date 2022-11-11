@@ -36,11 +36,29 @@ const mensagensDeErro = {
     dataNascimento: {
         valueMissing: 'O campo data de nascimento não pode estar vazio.',
         customError: 'Deve ser maior que 18 anos para se cadastrar.'
+    },
+    cep: {
+        valueMissing: 'O campo CEP não pode estar vazio.',
+        patternMismatch: 'O CEP digitado nao é válido',
+        customError: 'Não foi possível buscar o CEP'
+    },
+    logradouro: {
+        valueMissing: 'O campo logradouro não pode estar vazio.'
+    },
+    cidade: {
+        valueMissing: 'O campo cidade não pode estar vazio.'
+    },
+    estado: {
+        valueMissing: 'O campo estado não pode estar vazio.'
+    },
+    preco: {
+        valueMissing: 'O campo preço não pode estar vazio.'
     }
 }
 
 const validadores = {
     dataNascimento: input => validaDataNascimento(input),
+    cep: input => recuperarCep(input)
 }
 
 function mostraMensagemDeErro(tipoDeInput, input) {
@@ -72,3 +90,40 @@ function maiorQue18(data) {
     return dataMais18 <= dataAtual
 }
 
+function recuperarCep(input) {
+    const cep = input.value.replace(/\D/g, '')
+    const url = `https://viacep.com.br/ws/${cep}/json/`
+    const options = {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'content-type': 'application/json;charset=utf-8'
+        }
+    }
+
+    if (!input.validity.patternMismatch && !input.validity.valueMissing) {
+        fetch(url, options).then(
+            reponse => reponse.json()
+        ).then(
+            data => {
+                if (data.erro) {
+                    input.setCustomValidity('Não foi possível buscar o CEP.')
+                    return
+                }
+                input.setCustomValidity('')
+                preencheCamposComCEP(data)
+                return
+            }
+        )
+    }
+}
+
+function preencheCamposComCEP(data) {
+    const logradouro = document.querySelector('[data-tipo="logradouro"]')
+    const cidade = document.querySelector('[data-tipo="cidade"]')
+    const estado = document.querySelector('[data-tipo="estado"]')
+
+    logradouro.value = data.logradouro
+    cidade.value = data.localidade
+    estado.value = data.uf
+}

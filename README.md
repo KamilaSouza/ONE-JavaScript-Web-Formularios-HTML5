@@ -10,5 +10,6 @@ Ferramentas utilizadas:
 
 Visual Studio Code - versão 1.73.0<br>
 Node.js - versão 19.0.0<br>
-HTML5<br>
-Git - versão 2.35.2
+SimpleMaskMoney - versão 3.0.1<br>
+Git - versão 2.35.2<br>
+HTML5
